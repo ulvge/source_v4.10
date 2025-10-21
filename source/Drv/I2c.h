@@ -25,6 +25,9 @@
 
 /* 打印机使用的是 AT24C04 */
 #define EE_TYPE             AT24C04
+
+// 24C01～24C16 的地址都是1字节，24C32～24C256的地址是2字节
+// 24C01～AT24C02是一个器件地址，比如0xA0; 24C04～24C16是两个器件地址,比如0xA0和0xA2
 #define EE_ADDR_LEN         ((EE_TYPE > AT24C16) ? 2 : 1)
 #define EEPROM_PAGE_BYTES   ((EE_TYPE <= AT24C02) ? 8 : 16)
 EXT_I2C INT8U I2C1_EEPROM_ADDR;

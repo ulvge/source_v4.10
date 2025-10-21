@@ -84,11 +84,15 @@ static int cmd_EEPROM(int argc, char *argv[])
     char IsR_W;
     INT32U devAddr, devAddrBak, regAddr, len;
     INT32U paraOffset = 1;
+    INT32 needWriteDataLen;
     
     if (argc < 5) {
         SHELL_DEBUG(("ee para need more than 5\n"));
         eeUsage();
         return 0;
+    }
+    for (INT32 i = 0; i < sizeof(EEPROM_Buf); i++) {
+        EEPROM_Buf[i] = 0;
     }
     devAddr = ee_paraCovert(argv[paraOffset++], 0);
     IsR_W = *argv[paraOffset++];
@@ -133,15 +137,20 @@ static int cmd_EEPROM(int argc, char *argv[])
     case '1':
     case 'w':
     case 'W':
-        for (INT32 i = 0; i < argc - paraOffset; i++){
+        needWriteDataLen = argc - paraOffset;
+        if (needWriteDataLen >= sizeof(EEPROM_Buf)){
+            SHELL_DEBUG(("write data too long,max %o\n", sizeof(EEPROM_Buf)));
+            goto exit;
+        }
+        for (INT32 i = 0; i < needWriteDataLen; i++){
             INT32U tmp;
             tmp = ee_paraCovert(argv[paraOffset + i], 16);
             EEPROM_Buf[i] = tmp;
         }
-        if (EEP_WriteData(regAddr, EEPROM_Buf, argc - paraOffset) == TRUE){
-            SHELL_DEBUG(("write success\r\n"));
+        if (EEP_WriteData(regAddr, EEPROM_Buf, needWriteDataLen) == TRUE){
+            SHELL_DEBUG(("write success, dataLen = %d\r\n", needWriteDataLen));
         }else{
-            SHELL_DEBUG(("write failed\r\n"));
+            SHELL_DEBUG(("write failed, bus = %#x, regAddr = %#x, dataLen = %d\r\n", devAddr, regAddr, needWriteDataLen));
         }
         break;
         default:

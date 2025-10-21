@@ -258,7 +258,7 @@ void I2C1_DrvInit(void)
 //*****************************************************
 //		I2C2
 //*****************************************************
-static INT8U I2C2_Wait_MinCnt = 220;
+static INT8U I2C2_Wait_MinCnt = 1;
 void I2C2_WaitTick(void)
 {
     INT8U dly = I2C2_Wait_MinCnt; // EepMin=5;7419Min=1;
@@ -285,7 +285,7 @@ void I2C2_I2cStop(void)
     I2C2_WaitTick();
 
     GPIO_SetBits(IO_PORT_I2C2_SCL_DET, IO_PIN_I2C2_SCL_DET);
-    I2C2_WaitTick();
+    //I2C2_WaitTick();
     I2C2_WaitTick();
 
     GPIO_SetBits(IO_PORT_I2C2_SDA_DET, IO_PIN_I2C2_SDA_DET);
@@ -330,7 +330,7 @@ BOOL I2C2_I2CTxByte(INT8U Data)
             GPIO_ResetBits(IO_PORT_I2C2_SDA_DET, IO_PIN_I2C2_SDA_DET);
 
         Data = (INT8U)(Data << 1);
-        I2C2_WaitTick();
+        //I2C2_WaitTick();
 
         GPIO_SetBits(IO_PORT_I2C2_SCL_DET, IO_PIN_I2C2_SCL_DET);
         I2C2_WaitTick();
@@ -460,8 +460,8 @@ BOOL I2C2_Rx(INT8U dest_add, INT32U subaddr, INT8U sizeOfSubAddr, INT8U *pReadDa
     return ret;
 }
 
-//#define  EEP_BUS 1 // printer
-#define  EEP_BUS 2 // 开发板
+#define  EEP_BUS 1 // printer
+//#define  EEP_BUS 2 // 开发板
 void I2C2_DrvInit(void)
 {
     GPIOMode_TypeDef gpioMode = GPIO_Mode_Out_PP;
